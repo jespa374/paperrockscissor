@@ -9,12 +9,8 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 const Player = mongoose.model('Player', {
   name: {
     type: String,
-    required: true
   },
   move: {
-    type: String
-  },
-  id: {
     type: String
   }
 });
@@ -46,6 +42,7 @@ app.post('/api/games', async (req, res) => {
   try {
     const savedPlayer1 = await player1.save();
     res.status(201).json(savedPlayer1);
+    //console.log(savedPlayer1);
   }
   catch (error) {
     res.status(400).json({success: false, error});  
@@ -59,22 +56,29 @@ app.post('/api/games', async (req, res) => {
 
 //Spelare 2 ansluter sig till spelet med hjälp av ID.
 
-app.post('/api/games/{id}/join', async (req, res) => {
-  const { id } = req.body;
-  res.send('Hej! Vill du spela sten sax påse? ');
-  const player2 = new Player ({name});
+app.post('/api/games/:id/join', async (req, res) => {
   const { name } = req.body;
-
-  try {
-    const savedPlayer2 = await player2.save();
-    res.status(201).json(savedPlayer2);
-  }
-  catch (error) {
-    res.status(400).json({success: false, error});
-  }
+  Player.findById(req.params.id).then(player =>
+    {
+      if (!player) {
+        return res.status(400).json({success: false, error})
+      } 
+      const player2 = new Player ({name});
+      try {
+        const savedPlayer2 =  player2.save();
+        res.status(201).json(`Hej! Vill du spela sten sax påse?`);
+      }
+      catch (error) {
+        res.status(400).json({success: false, error});
+      }
+    }); 
 });
 
 //Spelare 1 gör sitt drag (Sten).
+//app.post('/api/games/{id}/move', async (req, res) => {
+ //const { move, name } = req.body;
+ //res.send
+//});
 
 //Spelare 2 gör sitt drag (Sax).
 
