@@ -1,7 +1,20 @@
-# Express Starter Project
+# Paper Rock Scissor
 
-This project includes the packages and babel setup for an express server, and is just meant to make things a little simpler to get up and running with.
 
-## Getting started
+Jag har jobbat med två alternativ i Mongoose, Node.js och express. Båda kan köras var för sig. På alternativ 2 fungerar inte POST api/games/{id}/join. Kommentera bort koden för alternativ 2 för att köra det. Kan testas på Postman.
 
-Install dependencies with `npm install`, then start the server by running `npm run dev`
+Endpoints:
+
+• Root: /
+
+• POST api/games : Skapar första spelet med spelare 1 genom att ange följande i bodyn. 
+
+  {
+    "name": "Lisa"
+  }  
+
+• POST api/games/{id}/join : Spelare 1 skickar idn som returnerades i föregående endpoint till spelare 2. Ange det ID:t här. Ange följande i request bodyn.
+ {
+   "name": "Pelle"
+ }
+

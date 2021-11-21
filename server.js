@@ -6,55 +6,41 @@ import mongoose from 'mongoose';
 const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/paperrockscissor";
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 
+//Alternativ 1
+
 const Player = mongoose.model('Player', {
   name: {
     type: String,
   },
   move: {
-    type: String
+    type: String,
+    default: null
   }
 });
 
-// Defines the port the app will run on. Defaults to 8080, but can be 
-// overridden when starting the server. For example:
-//
-//   PORT=9000 npm start
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 8080;
 const app = express();
 
-// Add middlewares to enable cors and json body parsing
-app.use(cors())
+app.use(cors());
 app.use(bodyParser.json());
 
-// Start defining your routes here
 app.get('/', (req, res) => {
   res.send('Hej! Vill du spela sten sax påse? ');
 });
 
-//Spelare 1 skickar ett request för att skapa ett nytt spel och får tillbaka ett 
-//spel-ID från servern.
-
 app.post('/api/games', async (req, res) => {
-  const { name } = req.body;
+  const { name, move } = req.body;
 
   const player1 = new Player({name});
   
   try {
     const savedPlayer1 = await player1.save();
     res.status(201).json(savedPlayer1);
-    //console.log(savedPlayer1);
   }
   catch (error) {
     res.status(400).json({success: false, error});  
-    console.log(error);
   }
-  
-
 });
-
-//Spelare 1 skickar ID till spelare 2 via valfri kommunikationskanal. (t.ex mail, slack)
-
-//Spelare 2 ansluter sig till spelet med hjälp av ID.
 
 app.post('/api/games/:id/join', async (req, res) => {
   const { name } = req.body;
@@ -74,19 +60,60 @@ app.post('/api/games/:id/join', async (req, res) => {
     }); 
 });
 
-//Spelare 1 gör sitt drag (Sten).
-//app.post('/api/games/{id}/move', async (req, res) => {
- //const { move, name } = req.body;
- //res.send
-//});
 
-//Spelare 2 gör sitt drag (Sax).
+//Alternativ 2
+/* const gameSchema = new mongoose.Schema({
+  players:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Player'
+    }
+  ]
+});
 
-//Spelare 1 kollar tillståndet för spelet och upptäcker att hen vann.
+const playerSchema = new mongoose.Schema({
+  name: {
+    type: String
+  },
+  move : {
+    type: String,
+    default: null
+  },
+  gameId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Game'
+  }
+});
 
-//Spelare 2 kollar tillståndet för spelet och upptäcker att hen förlorade.
+const Game = mongoose.model('Game', gameSchema);
+const Player = mongoose.model('Player', playerSchema);
 
-// Start the server
+const port = process.env.PORT || 8080;
+const app = express();
+
+app.use(cors());
+app.use(bodyParser.json());
+
+app.get('/', (req, res) => {
+  res.send('Hej! Vill du spela sten sax påse? ');
+});
+
+app.post('/api/games', async (req, res) => {
+ const { name, move } = req.body;
+ const newGame = await new Game().save();
+  
+  try {
+    const player1 = await new Player({name, move}).save();
+    newGame.players.push(player1);
+    newGame.save();
+    res.status(201).json(newGame);
+  }
+  catch (error) {
+    res.status(400).json({success: false, error});  
+    console.log(error);
+  }
+}); */
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
